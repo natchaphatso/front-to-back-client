@@ -3,21 +3,25 @@ import FormInput from "../../components/form/FormInput";
 import { createAlert } from "../../utils/createAlert";
 import { useForm } from "react-hook-form";
 import axios from "axios";
+import Buttons from "../../components/form/Buttons";
 
 function Register() {
-  const { handleSubmit, register } = useForm();
+  const { handleSubmit, register, formState } = useForm();
+  const { isSubmitting } = formState;
 
   const hdlSubmit = async (value) => {
-    // createAlert("error", "Email already exist !!");
+    await new Promise((resolve) => setTimeout(resolve, 2000));
+
     try {
       const res = await axios.post(
         "http://localhost:8000/auth/register",
         value
       );
       console.log(res);
+      createAlert("success", res.data.message);
     } catch (error) {
       console.log(error);
-      createAlert("info", error.response?.data?.message);
+      createAlert("error", error.response?.data?.message);
     }
   };
   return (
@@ -30,18 +34,13 @@ function Register() {
         <form onSubmit={handleSubmit(hdlSubmit)}>
           <div className="flex flex-col gap-4">
             <FormInput register={register} name="email" />
-            <FormInput register={register} name="Name" />
+            <FormInput register={register} name="name" />
             <FormInput register={register} name="password" />
             <FormInput register={register} name="confirmPassword" />
           </div>
 
           <div className="flex justify-center mt-4">
-            <button
-              type="submit"
-              className="bg-black text-white py-2 px-4 rounded-md cursor-pointer"
-            >
-              Register
-            </button>
+            <Buttons label="Register" isSubmitting={isSubmitting} />
           </div>
         </form>
       </div>
